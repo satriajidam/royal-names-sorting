@@ -3,103 +3,61 @@ package main
 import "testing"
 
 func TestRomanToInt(t *testing.T) {
-	result := romanToInt("")
-	if result != 0 {
-		t.Errorf("romanToInt(\"\") got: %v, want: %v", result, 0)
+	cases := map[string]int{
+		"": 0, "I": 1, "IV": 4, "V": 5, "IX": 9, "X": 10,
+		"XIV": 14, "XL": 40, "XLIX": 49, "L": 50, "XC": 90,
+		"XCIX": 99, "C": 100, "CD": 400, "CDL": 450, "D": 500,
+		"CM": 900, "CML": 950, "CMXC": 990, "M": 1000,
 	}
 
-	result = romanToInt("I")
-	if result != 1 {
-		t.Errorf("romanToInt(\"I\") got: %v, want: %v", result, 1)
+	for l, e := range cases {
+		result := romanToInt(l)
+		if result != e {
+			t.Errorf("romanToInt(\"%s\") got: %v, want: %v", l, result, e)
+		}
+	}
+}
+
+func TestIsRomanNumeral(t *testing.T) {
+	notRomanNumeral := []string{
+		"", "A", "B", "E", "F", "G", "H", "J", "K", "N",
+		"O", "P", "Q", "R", "S", "T", "U", "W", "Y", "Z",
 	}
 
-	result = romanToInt("IV")
-	if result != 4 {
-		t.Errorf("romanToInt(\"IV\") got: %v, want: %v", result, 4)
+	for _, l := range notRomanNumeral {
+		notRoman := isRomanNumeral(l)
+		if notRoman {
+			t.Errorf("isRomanNumeral(\"%s\") got: %v, want: %v", l, notRoman, false)
+		}
 	}
 
-	result = romanToInt("V")
-	if result != 5 {
-		t.Errorf("romanToInt(\"V\") got: %v, want: %v", result, 5)
+	romanNumeral := []string{"I", "V", "X", "L", "C", "D", "M"}
+
+	for _, l := range romanNumeral {
+		isRoman := isRomanNumeral(l)
+		if !isRoman {
+			t.Errorf("isRomanNumeral(\"%s\") got: %v, want: %v", l, isRoman, true)
+		}
+	}
+}
+
+func TestSplitRoyalName(t *testing.T) {
+	type expected struct {
+		name  string
+		roman string
 	}
 
-	result = romanToInt("IX")
-	if result != 9 {
-		t.Errorf("romanToInt(\"IX\") got: %v, want: %v", result, 9)
+	cases := map[string]expected{
+		"George VI":       {"George", "VI"},
+		"William II":      {"William", "II"},
+		"Marco Polo XVII": {"Marco Polo", "XVII"},
+		"Edward D. Teach": {"Edward D. Teach", ""},
 	}
 
-	result = romanToInt("X")
-	if result != 10 {
-		t.Errorf("romanToInt(\"X\") got: %v, want: %v", result, 10)
-	}
-
-	result = romanToInt("XIV")
-	if result != 14 {
-		t.Errorf("romanToInt(\"XIV\") got: %v, want: %v", result, 14)
-	}
-
-	result = romanToInt("XL")
-	if result != 40 {
-		t.Errorf("romanToInt(\"XL\") got: %v, want: %v", result, 40)
-	}
-
-	result = romanToInt("XLIX")
-	if result != 49 {
-		t.Errorf("romanToInt(\"XLIX\") got: %v, want: %v", result, 49)
-	}
-
-	result = romanToInt("L")
-	if result != 50 {
-		t.Errorf("romanToInt(\"L\") got: %v, want: %v", result, 50)
-	}
-
-	result = romanToInt("XC")
-	if result != 90 {
-		t.Errorf("romanToInt(\"XC\") got: %v, want: %v", result, 90)
-	}
-
-	result = romanToInt("XCIX")
-	if result != 99 {
-		t.Errorf("romanToInt(\"XCIX\") got: %v, want: %v", result, 99)
-	}
-
-	result = romanToInt("C")
-	if result != 100 {
-		t.Errorf("romanToInt(\"C\") got: %v, want: %v", result, 100)
-	}
-
-	result = romanToInt("CD")
-	if result != 400 {
-		t.Errorf("romanToInt(\"CD\") got: %v, want: %v", result, 400)
-	}
-
-	result = romanToInt("CDL")
-	if result != 450 {
-		t.Errorf("romanToInt(\"CDL\") got: %v, want: %v", result, 450)
-	}
-
-	result = romanToInt("D")
-	if result != 500 {
-		t.Errorf("romanToInt(\"D\") got: %v, want: %v", result, 500)
-	}
-
-	result = romanToInt("CM")
-	if result != 900 {
-		t.Errorf("romanToInt(\"CM\") got: %v, want: %v", result, 900)
-	}
-
-	result = romanToInt("CML")
-	if result != 950 {
-		t.Errorf("romanToInt(\"CML\") got: %v, want: %v", result, 950)
-	}
-
-	result = romanToInt("CMXC")
-	if result != 990 {
-		t.Errorf("romanToInt(\"CMXC\") got: %v, want: %v", result, 990)
-	}
-
-	result = romanToInt("M")
-	if result != 1000 {
-		t.Errorf("romanToInt(\"M\") got: %v, want: %v", result, 1000)
+	for n, e := range cases {
+		name, roman := splitRoyalName(n)
+		if e.name != name || e.roman != roman {
+			t.Errorf("splitRoyalName(\"%s\") got: %v, want: %v", n, expected{name, roman}, e)
+		}
 	}
 }
