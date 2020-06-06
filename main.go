@@ -65,12 +65,12 @@ func sortRoyalNames(royalNames []string) []string {
 		return []string{}
 	}
 
-	copiedNames := append([]string{}, royalNames...)
+	sortedNames := append([]string{}, royalNames...)
 
-	sort.SliceStable(copiedNames, func(i, j int) bool {
-		prevName, prevRoman := splitRoyalName(copiedNames[i])
+	sort.SliceStable(sortedNames, func(i, j int) bool {
+		prevName, prevRoman := splitRoyalName(sortedNames[i])
 		prevOrder := romanToInt(prevRoman)
-		nextName, nextRoman := splitRoyalName(copiedNames[j])
+		nextName, nextRoman := splitRoyalName(sortedNames[j])
 		nextOrder := romanToInt(nextRoman)
 
 		compareName := strings.Compare(prevName, nextName)
@@ -86,13 +86,12 @@ func sortRoyalNames(royalNames []string) []string {
 		return false
 	})
 
-	return copiedNames
+	return sortedNames
 }
 
 func main() {
 	case1 := []string{"George VI", "William II", "George CMXC", "Elizabeth I", "William I"}
 	fmt.Println("Before:", case1)
 	result1 := sortRoyalNames(case1)
-	fmt.Println("Before:", case1)
 	fmt.Println("After:", result1)
 }
