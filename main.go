@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 )
 
@@ -58,6 +60,39 @@ func splitRoyalName(royalName string) (string, string) {
 	return strings.Join(items[:len(items)-1], " "), lastItem
 }
 
-func main() {
+func sortRoyalNames(royalNames []string) []string {
+	if len(royalNames) == 0 {
+		return []string{}
+	}
 
+	copiedNames := append([]string{}, royalNames...)
+
+	sort.SliceStable(copiedNames, func(i, j int) bool {
+		prevName, prevRoman := splitRoyalName(copiedNames[i])
+		prevOrder := romanToInt(prevRoman)
+		nextName, nextRoman := splitRoyalName(copiedNames[j])
+		nextOrder := romanToInt(nextRoman)
+
+		compareName := strings.Compare(prevName, nextName)
+
+		if compareName < 0 {
+			return true
+		} else if compareName == 0 {
+			if prevOrder < nextOrder {
+				return true
+			}
+		}
+
+		return false
+	})
+
+	return copiedNames
+}
+
+func main() {
+	case1 := []string{"George VI", "William II", "George CMXC", "Elizabeth I", "William I"}
+	fmt.Println("Before:", case1)
+	result1 := sortRoyalNames(case1)
+	fmt.Println("Before:", case1)
+	fmt.Println("After:", result1)
 }
