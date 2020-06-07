@@ -19,21 +19,21 @@ func TestRomanNumToInt(t *testing.T) {
 }
 
 func TestIsRomanNum(t *testing.T) {
-	falseTests := []string{
+	invalidTests := []string{
 		"", "A", "B", "E", "F", "G", "H", "J", "K", "N",
 		"O", "P", "Q", "R", "S", "T", "U", "W", "Y", "Z",
 	}
 
-	for _, letter := range falseTests {
+	for _, letter := range invalidTests {
 		got := isRomanNum(letter)
 		if got {
 			t.Errorf("isRomanNum(\"%s\") got: %v, want: %v", letter, got, false)
 		}
 	}
 
-	trueTests := []string{"I", "V", "X", "L", "C", "D", "M"}
+	validTests := []string{"I", "V", "X", "L", "C", "D", "M"}
 
-	for _, letter := range trueTests {
+	for _, letter := range validTests {
 		got := isRomanNum(letter)
 		if !got {
 			t.Errorf("isRomanNum(\"%s\") got: %v, want: %v", letter, got, true)
@@ -104,7 +104,7 @@ func TestSortRoyalNames(t *testing.T) {
 			got.Sort()
 			for i := 0; i < len(got); i++ {
 				if got[i] != tt.want[i] {
-					t.Errorf("%s.Sort(%v) got: %v, want: %v", tt.name, tt.royalNames, got, tt.want)
+					t.Errorf("royalNames.Sort(%v) got: %v, want: %v", tt.royalNames, got, tt.want)
 				}
 			}
 		})
