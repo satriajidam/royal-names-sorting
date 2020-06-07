@@ -45,20 +45,26 @@ func TestIsRomanNum(t *testing.T) {
 	}
 }
 
-func TestGetRomanNum(t *testing.T) {
+func TestSplitName(t *testing.T) {
 	royalNames := RoyalNames{}
 
-	tests := map[string]string{
-		"George VI":       "VI",
-		"William II":      "II",
-		"Marco Polo XVII": "XVII",
-		"Edward Teach":    "",
+	tests := map[string]struct {
+		name     string
+		romanNum string
+	}{
+		"George VI":       {"George", "VI"},
+		"William II":      {"William", "II"},
+		"Marco Polo XVII": {"Marco Polo", "XVII"},
+		"Edward Teach":    {"Edward Teach", ""},
 	}
 
 	for name, want := range tests {
-		got := royalNames.getRomanNum(name)
-		if want != got {
-			t.Errorf("RoyalNames.getRomanNum(\"%s\") got: %v, want: %v", name, got, want)
+		gotName, gotRomanNum := royalNames.splitName(name)
+		if want.name != gotName {
+			t.Errorf("RoyalNames.splitName(\"%s\") got: %v, want: %v", name, gotName, want.name)
+		}
+		if want.romanNum != gotRomanNum {
+			t.Errorf("RoyalNames.splitName(\"%s\") got: %v, want: %v", name, gotRomanNum, want.romanNum)
 		}
 	}
 }

@@ -49,29 +49,30 @@ func (r RoyalNames) isRomanNum(letter string) bool {
 	return matched
 }
 
-func (r RoyalNames) getRomanNum(royalName string) string {
+func (r RoyalNames) splitName(royalName string) (string, string) {
 	if royalName == "" {
-		return ""
+		return royalName, ""
 	}
 
 	items := strings.Split(royalName, " ")
-	lastItem := items[len(items)-1]
+	romanNum := items[len(items)-1]
 
-	if !r.isRomanNum(lastItem) {
-		return ""
+	if !r.isRomanNum(romanNum) {
+		return strings.Join(items, " "), ""
 	}
 
-	return lastItem
+	return strings.Join(items[:len(items)-1], " "), romanNum
 }
 
 func (r RoyalNames) Less(i, j int) bool {
-	compareName := strings.Compare(r[i], r[j])
+	prevName, prevRomNum := r.splitName(r[i])
+	nextName, nextRomNum := r.splitName(r[j])
+	compareName := strings.Compare(prevName, nextName)
 
 	if compareName < 0 {
 		return true
 	} else if compareName == 0 {
-		if r.romanNumToInt(r.getRomanNum(r[i])) <
-			r.romanNumToInt(r.getRomanNum(r[j])) {
+		if r.romanNumToInt(prevRomNum) < r.romanNumToInt(nextRomNum) {
 			return true
 		}
 	}
