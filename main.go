@@ -9,9 +9,7 @@ import (
 	"strings"
 )
 
-type RoyalNames []string
-
-func (r RoyalNames) romanNumToInt(romanNum string) int {
+func romanNumToInt(romanNum string) int {
 	letters := []rune(romanNum)
 	romanNumMap := map[rune]int{
 		'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000,
@@ -36,7 +34,7 @@ func (r RoyalNames) romanNumToInt(romanNum string) int {
 	return result
 }
 
-func (r RoyalNames) isRomanNum(letter string) bool {
+func isRomanNum(letter string) bool {
 	if letter == "" {
 		return false
 	}
@@ -49,7 +47,7 @@ func (r RoyalNames) isRomanNum(letter string) bool {
 	return matched
 }
 
-func (r RoyalNames) splitName(royalName string) (string, string) {
+func splitRoyalName(royalName string) (string, string) {
 	if royalName == "" {
 		return royalName, ""
 	}
@@ -57,22 +55,24 @@ func (r RoyalNames) splitName(royalName string) (string, string) {
 	items := strings.Split(royalName, " ")
 	romanNum := items[len(items)-1]
 
-	if !r.isRomanNum(romanNum) {
+	if !isRomanNum(romanNum) {
 		return strings.Join(items, " "), ""
 	}
 
 	return strings.Join(items[:len(items)-1], " "), romanNum
 }
 
+type RoyalNames []string
+
 func (r RoyalNames) Less(i, j int) bool {
-	prevName, prevRomNum := r.splitName(r[i])
-	nextName, nextRomNum := r.splitName(r[j])
+	prevName, prevRomNum := splitRoyalName(r[i])
+	nextName, nextRomNum := splitRoyalName(r[j])
 	compareName := strings.Compare(prevName, nextName)
 
 	if compareName < 0 {
 		return true
 	} else if compareName == 0 {
-		if r.romanNumToInt(prevRomNum) < r.romanNumToInt(nextRomNum) {
+		if romanNumToInt(prevRomNum) < romanNumToInt(nextRomNum) {
 			return true
 		}
 	}

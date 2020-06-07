@@ -3,8 +3,6 @@ package main
 import "testing"
 
 func TestRomanNumToInt(t *testing.T) {
-	royalNames := RoyalNames{}
-
 	tests := map[string]int{
 		"": 0, "I": 1, "IV": 4, "V": 5, "IX": 9, "X": 10,
 		"XIV": 14, "XL": 40, "XLIX": 49, "L": 50, "XC": 90,
@@ -13,41 +11,37 @@ func TestRomanNumToInt(t *testing.T) {
 	}
 
 	for letter, want := range tests {
-		got := royalNames.romanNumToInt(letter)
+		got := romanNumToInt(letter)
 		if got != want {
-			t.Errorf("RoyalNames.romanNumToInt(\"%s\") got: %v, want: %v", letter, got, want)
+			t.Errorf("romanNumToInt(\"%s\") got: %v, want: %v", letter, got, want)
 		}
 	}
 }
 
 func TestIsRomanNum(t *testing.T) {
-	royalNames := RoyalNames{}
-
 	falseTests := []string{
 		"", "A", "B", "E", "F", "G", "H", "J", "K", "N",
 		"O", "P", "Q", "R", "S", "T", "U", "W", "Y", "Z",
 	}
 
 	for _, letter := range falseTests {
-		got := royalNames.isRomanNum(letter)
+		got := isRomanNum(letter)
 		if got {
-			t.Errorf("RoyalNames.isRomanNum(\"%s\") got: %v, want: %v", letter, got, false)
+			t.Errorf("isRomanNum(\"%s\") got: %v, want: %v", letter, got, false)
 		}
 	}
 
 	trueTests := []string{"I", "V", "X", "L", "C", "D", "M"}
 
 	for _, letter := range trueTests {
-		got := royalNames.isRomanNum(letter)
+		got := isRomanNum(letter)
 		if !got {
-			t.Errorf("RoyalNames.isRomanNum(\"%s\") got: %v, want: %v", letter, got, true)
+			t.Errorf("isRomanNum(\"%s\") got: %v, want: %v", letter, got, true)
 		}
 	}
 }
 
-func TestSplitName(t *testing.T) {
-	royalNames := RoyalNames{}
-
+func TestSplitRoyalName(t *testing.T) {
 	tests := map[string]struct {
 		name     string
 		romanNum string
@@ -59,12 +53,12 @@ func TestSplitName(t *testing.T) {
 	}
 
 	for name, want := range tests {
-		gotName, gotRomanNum := royalNames.splitName(name)
+		gotName, gotRomanNum := splitRoyalName(name)
 		if want.name != gotName {
-			t.Errorf("RoyalNames.splitName(\"%s\") got: %v, want: %v", name, gotName, want.name)
+			t.Errorf("splitRoyalName(\"%s\") got: %v, want: %v", name, gotName, want.name)
 		}
 		if want.romanNum != gotRomanNum {
-			t.Errorf("RoyalNames.splitName(\"%s\") got: %v, want: %v", name, gotRomanNum, want.romanNum)
+			t.Errorf("splitRoyalName(\"%s\") got: %v, want: %v", name, gotRomanNum, want.romanNum)
 		}
 	}
 }
@@ -110,7 +104,7 @@ func TestSortRoyalNames(t *testing.T) {
 			got.Sort()
 			for i := 0; i < len(got); i++ {
 				if got[i] != tt.want[i] {
-					t.Errorf("RoyalNames.Sort(%v) got: %v, want: %v", tt.royalNames, got, tt.want)
+					t.Errorf("%s.Sort(%v) got: %v, want: %v", tt.name, tt.royalNames, got, tt.want)
 				}
 			}
 		})
