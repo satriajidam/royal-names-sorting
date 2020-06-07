@@ -1,15 +1,19 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
 )
 
-func romanToInt(roman string) int {
-	letters := []rune(roman)
-	romanMap := map[rune]int{
+type RoyalNames []string
+
+func (r RoyalNames) romanNumToInt(romanNum string) int {
+	letters := []rune(romanNum)
+	romanNumMap := map[rune]int{
 		'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000,
 	}
 
@@ -21,18 +25,18 @@ func romanToInt(roman string) int {
 	temp := 0
 
 	for i := len(letters) - 1; i >= 0; i-- {
-		if temp <= romanMap[letters[i]] {
-			result = result + romanMap[letters[i]]
+		if temp <= romanNumMap[letters[i]] {
+			result = result + romanNumMap[letters[i]]
 		} else {
-			result = result - romanMap[letters[i]]
+			result = result - romanNumMap[letters[i]]
 		}
-		temp = romanMap[letters[i]]
+		temp = romanNumMap[letters[i]]
 	}
 
 	return result
 }
 
-func isRomanNumeral(letter string) bool {
+func (r RoyalNames) isRomanNum(letter string) bool {
 	if letter == "" {
 		return false
 	}
@@ -45,53 +49,110 @@ func isRomanNumeral(letter string) bool {
 	return matched
 }
 
-func splitRoyalName(royalName string) (string, string) {
+func (r RoyalNames) getRomanNum(royalName string) string {
 	if royalName == "" {
-		return royalName, ""
+		return ""
 	}
 
 	items := strings.Split(royalName, " ")
 	lastItem := items[len(items)-1]
 
-	if !isRomanNumeral(lastItem) {
-		return royalName, ""
+	if !r.isRomanNum(lastItem) {
+		return ""
 	}
 
-	return strings.Join(items[:len(items)-1], " "), lastItem
+	return lastItem
 }
 
-func sortRoyalNames(royalNames []string) []string {
-	if len(royalNames) == 0 {
-		return []string{}
+func (r RoyalNames) Less(i, j int) bool {
+	compareName := strings.Compare(r[i], r[j])
+
+	if compareName < 0 {
+		return true
+	} else if compareName == 0 {
+		if r.romanNumToInt(r.getRomanNum(r[i])) <
+			r.romanNumToInt(r.getRomanNum(r[j])) {
+			return true
+		}
 	}
 
-	sortedNames := append([]string{}, royalNames...)
+	return false
+}
 
-	sort.SliceStable(sortedNames, func(i, j int) bool {
-		prevName, prevRoman := splitRoyalName(sortedNames[i])
-		prevOrder := romanToInt(prevRoman)
-		nextName, nextRoman := splitRoyalName(sortedNames[j])
-		nextOrder := romanToInt(nextRoman)
+func (r RoyalNames) Len() int {
+	return len(r)
+}
 
-		compareName := strings.Compare(prevName, nextName)
+func (r RoyalNames) Swap(i, j int) {
+	r[i], r[j] = r[j], r[i]
+}
 
-		if compareName < 0 {
-			return true
-		} else if compareName == 0 {
-			if prevOrder < nextOrder {
-				return true
-			}
-		}
-
-		return false
-	})
-
-	return sortedNames
+func (r RoyalNames) Sort() {
+	if len(r) == 0 {
+		return
+	}
+	sort.Sort(r)
 }
 
 func main() {
-	case1 := []string{"George VI", "William II", "George CMXC", "Elizabeth I", "William I"}
-	fmt.Println("Before:", case1)
-	result1 := sortRoyalNames(case1)
-	fmt.Println("After:", result1)
+	if len(os.Args) == 1 {
+		fmt.Fprintln(os.Stderr, "Error: no input & output file path provided")
+		os.Exit(1)
+	}
+
+	if len(os.Args) < 2 {
+		fmt.Fprintln(os.Stderr, "Error: no input file path provided")
+		os.Exit(1)
+	}
+
+	if len(os.Args) < 3 {
+		fmt.Fprintln(os.Stderr, "Error: no provide output file provided")
+		os.Exit(1)
+	}
+
+	inputFilepath := os.Args[1]
+	inputFile, err := os.Open(inputFilepath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: failed reading input file: %s\n", err)
+		os.Exit(1)
+	}
+	defer inputFile.Close()
+
+	names := []string{}
+	scanner := bufio.NewScanner(inputFile)
+	for scanner.Scan() {
+		names = append(names, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: failed reading input file: %s\n", err)
+		os.Exit(1)
+	}
+
+	royalNames := RoyalNames(names)
+	royalNames.Sort()
+
+	outputFilepath := os.Args[2]
+	if _, err := os.Stat(outputFilepath); !os.IsNotExist(err) {
+		fmt.Fprintf(os.Stderr, "Error: failed writing output file: create %s: file already exists\n", outputFilepath)
+		os.Exit(1)
+	}
+
+	outputFile, err := os.OpenFile(outputFilepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: failed writing output file: %s\n", err)
+		os.Exit(1)
+	}
+
+	writer := bufio.NewWriter(outputFile)
+	for _, name := range royalNames {
+		_, err := writer.WriteString(name + "\n")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: failed writing to output file: %s\n", err)
+			os.Exit(1)
+		}
+	}
+
+	writer.Flush()
+	outputFile.Close()
 }
